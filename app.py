@@ -3,7 +3,7 @@ import os
 import json
 
 
-config.load_kube_config()
+config.load_incluster_config()
 
 
 v1 = client.CoreV1Api()
