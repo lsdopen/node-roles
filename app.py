@@ -9,7 +9,7 @@ config.load_incluster_config()
 v1 = client.CoreV1Api()
 
 
-role_label_key = "node-group"
+role_label_key = "eks.amazonaws.com/nodegroup"
 
 def label_node(node_name, key, value):
     body = {
