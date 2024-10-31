@@ -1,0 +1,62 @@
+name: 'Semantic Release'
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+permissions:
+  packages: write
+  id-token: write
+  issues: write
+  pull-requests: write
+  contents: write
+
+jobs:
+  semantic-release:
+    name: 'Semantic Release'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Semantic Release
+        id: semantic
+        uses: docker://ghcr.io/codfish/semantic-release-action@sha256:71048986f7e28f024cbad0ef106a7ef20b9b0d322f3a8aa51d89f1c424e75061
+        with:
+          branches: |
+            [
+              "main",
+              {
+                name: "develop",
+                prerelease: true
+              }
+            ]
+          additional-packages: |
+            [
+              "@semantic-release/changelog@6.0.3",
+              "@semantic-release/git@10.0.1"
+            ]
+          plugins: |
+            [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              "@semantic-release/git"
+            ]
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/webserver:v${{ steps.semantic.outputs.release-version }} .
+          docker push ghcr.io/${{ github.repository }}/webserver:v${{ steps.semantic.outputs.release-version }}
