@@ -2,13 +2,8 @@ from kubernetes import client, config, watch
 import os
 import json
 
-
 config.load_incluster_config()
-
-
 v1 = client.CoreV1Api()
-
-
 role_label_key = "eks.amazonaws.com/nodegroup"
 
 def label_node(node_name, key, value):
@@ -21,9 +16,21 @@ def label_node(node_name, key, value):
     }
     try:
         v1.patch_node(node_name, body)
-        print(f"Successfully labeled node {node_name} with {key}={value}")
+        response = {
+            "status": "success",
+            "message": f"Successfully labeled node {node_name} with {key}={value}",
+            "node_name": node_name,
+            "label": {key: value}
+        }
+        # print(f"Successfully labeled node {node_name} with {key}={value}")
     except client.exceptions.ApiException as e:
-        print(f"Failed to label node {node_name}: {e}")
+        response = {
+            "status": "error",
+            "message": f"Failed to label node {node_name}: {e}",
+            "node_name": node_name
+        }
+    return json.dumps(response)
+        # print(f"Failed to label node {node_name}: {e}")
 
 def watch_new_nodes():
     w = watch.Watch()
@@ -37,11 +44,27 @@ def watch_new_nodes():
         if event_type == "ADDED":
             labels = set(node.metadata.labels.keys())
             if node_role_label_key not in labels:
-                print(f"New node detected: {node_name}, labeling it...")
+                response = {
+                    "status": "info",
+                    "message": f"New node detected: {node_name}, labeling it...",
+                    "node_name": node_name
+                }
+                # print(f"New node detected: {node_name}, labeling it...")
                 label_node(node_name, node_role_label_key, 'true')
             else:
-                print(f"Node {node_name} already has the role label.{node_role_label}")
+                response = {
+                    "status": "info",
+                    "message": f"Node {node_name} already has the role label {node_role_label}",
+                    "node_name": node_name
+                }  
+                print(json.dumps(response))          
+                # print(f"Node {node_name} already has the role label.{node_role_label}")
 
 if __name__ == "__main__":
-    print("Starting to watch for new nodes...")
+    response = {
+        "status": "info",
+        "message": "Starting to watch for new nodes..."
+    }
+    print(json.dumps(response))
+    # print("Starting to watch for new nodes...")
     watch_new_nodes()
