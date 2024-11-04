@@ -4,7 +4,7 @@ import json
 
 config.load_incluster_config()
 v1 = client.CoreV1Api()
-role_label_key = "eks.amazonaws.com/nodegroup"
+role_label_key = "node-group"
 
 def label_node(node_name, key, value):
     body = {
