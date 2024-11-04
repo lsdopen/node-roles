@@ -30,7 +30,7 @@ def label_node(node_name, key, value):
             "node_name": node_name
         }
     return json.dumps(response)
-        # print(f"Failed to label node {node_name}: {e}")
+        # print(f"Failed to label the node {node_name}: {e}")
 
 def watch_new_nodes():
     w = watch.Watch()
