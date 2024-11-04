@@ -58,5 +58,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/node-role-kubernetes:v${{ steps.semantic.outputs.release-version }} .
-          docker push ghcr.io/${{ github.repository }}/node-role-kubernetes:v${{ steps.semantic.outputs.release-version }}
+          docker build -t ghcr.io/${{ github.repository }}/node-roles:v${{ steps.semantic.outputs.release-version }} .
+          docker push ghcr.io/${{ github.repository }}/node-roles:v${{ steps.semantic.outputs.release-version }}
