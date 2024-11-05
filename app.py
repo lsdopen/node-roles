@@ -4,9 +4,12 @@ and labels them with the appropriate role label.
 """
 import json
 from kubernetes import client, config, watch
+
 config.load_incluster_config()
 v1 = client.CoreV1Api()
 ROLE_LABEL_KEY = "node-group"
+
+
 def label_node(node_name, key, value):
     """
     Label a node with a key-value pair.
@@ -33,9 +36,11 @@ def label_node(node_name, key, value):
             "node_name": node_name
         }
     return json.dumps(label_node_response)
+
+
 def watch_new_nodes():
     """
-    Watch for new nodes in the cluster 
+    Watch for new nodes in the cluster
     and label them with the appropriate role label.
     """
     w = watch.Watch()
@@ -53,15 +58,18 @@ def watch_new_nodes():
                     "status": "info",
                     "message": f"New node detected: {node_name}, labeling it...",
                     "node_name": node_name
-                }               
+                }
                 label_node(node_name, node_role_label_key, 'true')
+                print(json.dumps(watch_node_response))
             else:
                 watch_node_response = {
                     "status": "info",
                     "message": f"Node {node_name} already has the role label {node_role_label}",
                     "node_name": node_name
-                }  
+                }
                 print(json.dumps(watch_node_response))
+
+
 if __name__ == "__main__":
     response = {
         "status": "info",
