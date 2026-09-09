@@ -65,5 +65,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/${{ github.repository }}:v${{ steps.semantic.outputs.release-version }}%
+          tags: ghcr.io/${{ github.repository }}:v${{ steps.semantic.outputs.release-version }}
       
